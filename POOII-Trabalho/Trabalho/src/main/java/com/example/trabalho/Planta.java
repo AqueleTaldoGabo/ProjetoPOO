@@ -1,9 +1,13 @@
 package com.example.trabalho;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Planta {
-    int[] plantas = new int[6];
     String url = "jdbc:postgresql://localhost:5432/Planta";
     String usuario = "postgres";
     String senha = "12345";
@@ -34,23 +38,22 @@ public class Planta {
             System.out.println("Detalhes: " + e.getMessage());
         }
     }
-    public void deletarPlanta(int plantaId){
-        String sql = "DELETE FROM Planta WHERE plantaid = ?";
+    public void deletarPlanta(String plantaNome){
+        String sql = "DELETE FROM Planta WHERE nome = ?";
 
         try (Connection connection = DriverManager.getConnection(url, usuario, senha);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             System.out.println("Conex�o realizada com sucesso!");
 
-            int idParaExcluir = plantaId;
-            statement.setInt(1, idParaExcluir);
+            statement.setString(1, plantaNome);
 
             int linhasExcluidas = statement.executeUpdate();
 
             if (linhasExcluidas > 0) {
-                System.out.println("Planta com ID " + idParaExcluir + " exclu�do com sucesso!");
+                System.out.println("Planta com ID " + plantaNome + " exclu�do com sucesso!");
             } else {
-                System.out.println("Nenhuma planta encontrado com ID " + idParaExcluir);
+                System.out.println("Nenhuma planta encontrado com ID " + plantaNome);
             }
 
         } catch (SQLException e) {
@@ -58,5 +61,56 @@ public class Planta {
             System.out.println("Detalhes: " + e.getMessage());
         }
     }
+    public void mudarPlanta(String nome, String nomeNovo, int custo, String tipo){
+        String sql = "UPDATE Planta set nome = ?, custo = ?, tipo = ? WHERE nome = ?";
 
+        try (Connection connection = DriverManager.getConnection(url, usuario, senha);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            System.out.println("Conex�o realizada com sucesso!");
+            statement.setString(4, nome);
+
+            if(!nomeNovo.isEmpty())
+                statement.setString(1, (nomeNovo));
+            else
+                statement.setString(1, nome);
+            if(custo != -1) {
+                statement.setInt(2,custo);
+            }
+            if(!tipo.isEmpty()) {
+                statement.setString(3, tipo);
+            }
+            int rowsAffected = statement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Erro na opera��o com o banco de dados!2");
+            System.out.println("Detalhes: " + e.getMessage());
+        }
+    }
+
+    public ObservableList<String> lista(){
+        String sql = "Select nome From planta";
+
+        List<String> lista = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(url, usuario, senha);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+
+            try (ResultSet result = statement.executeQuery()) {
+
+                while (result.next()) {
+                    String nome = result.getString("nome");
+                    System.out.println(nome);
+                    lista.add(nome);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro na opera��o com o banco de dados!");
+            System.out.println("Detalhes: " + e.getMessage());
+        }
+        ObservableList<String> list = FXCollections.observableArrayList(lista);
+
+        return list;
+    }
 }

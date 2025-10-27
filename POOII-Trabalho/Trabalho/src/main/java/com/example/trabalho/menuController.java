@@ -35,17 +35,11 @@ public class menuController {
     }
 
     public void baralhoButtonClick(ActionEvent actionEvent) throws IOException {
-        Parent fxmlLoader =  FXMLLoader.load(getClass().getResource("baralho.fxml"));
-        Parent planta = FXMLLoader.load(getClass().getResource("inserir.fxml"));
+        Parent fxmlLoader =  FXMLLoader.load(getClass().getResource("selecao.fxml"));
         Scene scene = new Scene(fxmlLoader);
-        Scene plan = new Scene(planta);
         Stage window = (Stage)((Node)actionEvent.getSource()).getScene().getWindow();
-        //window.setScene(scene);
-        //window.show();
-        Stage stage = new Stage();
-        stage.setTitle("New Window");
-        stage.setScene(plan);
-        stage.show();
+        window.setScene(scene);
+        window.show();
     }
 
     public void sairButtonClick(ActionEvent actionEvent) {
